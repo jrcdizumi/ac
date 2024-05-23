@@ -2,7 +2,6 @@ from django.db import models
 from django.utils import timezone
 import threading
 import django
-import csv
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 from datetime import timedelta
