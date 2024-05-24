@@ -122,17 +122,17 @@ def client_off(request):  # 第一次访问客户端界面、# 开机
 
 
 def client_on(request):
-
+    pass
 def power(request):  # 客户端-电源键
-
+    pass
 def change_high(request):  # 客户端-高风
-
+    pass
 def change_mid(request):  # 中速
-
+    pass
 def change_low(request):  # 低速
-
+    pass
 def change_up(request):  # 升高温度
-
+    pass
 def change_down(request):  # 降低温度
-
+    pass
 #====================

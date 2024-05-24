@@ -26,4 +26,15 @@ urlpatterns = [
     path('front/', get_front_page),
     path('check_in/', check_in),
     path('check_out/', check_out),
+
+    # 默认
+    path('', client_off),
+    path('on/', client_on),
+    # 客户端按钮
+    path('power/', power),
+    path('high/', change_high),
+    path('mid/', change_mid),
+    path('low/', change_low),
+    path('up/', change_up),
+    path('down/', change_down),
 ]
