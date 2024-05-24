@@ -2,6 +2,18 @@
 
 import django.utils.timezone
 from django.db import migrations, models
+from django.core.exceptions import ObjectDoesNotExist
+
+
+# migrate时在数据库中创建6个房间
+def create_rooms(apps, schema_editor):
+    Room = apps.get_model('hotel', 'Room')
+    print(123)
+    for i in range(1, 7):
+        try:
+            Room.objects.get(room_id=i)
+        except ObjectDoesNotExist:
+            Room.objects.create(room_id=i)
 
 
 class Migration(migrations.Migration):
@@ -40,4 +52,5 @@ class Migration(migrations.Migration):
                 ('fee_rate', models.FloatField(default=0.3, verbose_name='当前费率')),
             ],
         ),
+        migrations.RunPython(create_rooms),
     ]

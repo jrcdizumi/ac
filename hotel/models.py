@@ -6,6 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 from datetime import timedelta
 
+
 # Create your models here.
 class Room(models.Model):
     FAN_SPEED = [
@@ -120,6 +121,7 @@ class Room(models.Model):
             if not room.is_occupied:
                 return room.room_id
         return None
+
 
 # 用户的所有请求，包括温度调整、风速调整、开关机、入住退房等
 class Request(models.Model):
