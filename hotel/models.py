@@ -68,7 +68,8 @@ class Room(models.Model):
     # 入住时调用该函数，将房间设置为有人入住状态
     def checkin(self):
         self.is_occupied = True
-        start_time = timezone.now()
+        self.fee = 0.0
+        self.start_time = timezone.now()
         self.save()
 
     # 退房时调用该函数，返回当前费用、自动关闭空调并将费用清零
