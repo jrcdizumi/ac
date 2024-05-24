@@ -38,32 +38,49 @@ class Room(models.Model):
     # 当前费率
     fee_rate = models.FloatField(verbose_name='当前费率', default=0.3)
 
-    # timer
-    timer = None
-
     # 当前温度+1，但不大于30度
     def increase_temp(self):
-        self.current_temp = min(self.current_temp + 1, 30)
+        if not self.on or not self.is_occupied:
+            return False
+        if self.current_temp >= 30:
+            return False
+        self.current_temp = self.current_temp + 1
         self.fee_rate = self.calculate_fee_rate()
         self.save()
+        return True
 
     # 当前温度-1，但不小于16度
     def decrease_temp(self):
-        self.current_temp = max(self.current_temp - 1, 16)
+        if not self.on or not self.is_occupied:
+            return False
+        if self.current_temp <= 16:
+            return False
+        self.current_temp = self.current_temp - 1
         self.fee_rate = self.calculate_fee_rate()
         self.save()
+        return True
 
     # 风速+1，但不大于3
     def increase_speed(self):
-        self.fan_speed = min(self.fan_speed + 1, 3)
+        if not self.on or not self.is_occupied:
+            return False
+        if self.fan_speed >= 3:
+            return False
+        self.fan_speed = self.fan_speed + 1
         self.fee_rate = self.calculate_fee_rate()
         self.save()
+        return True
 
     # 风速-1，但不小于1
     def decrease_speed(self):
-        self.fan_speed = max(self.fan_speed - 1, 1)
+        if not self.on or not self.is_occupied:
+            return False
+        if self.fan_speed <= 1:
+            return False
+        self.fan_speed = self.fan_speed - 1
         self.fee_rate = self.calculate_fee_rate()
         self.save()
+        return True
 
     # 入住时调用该函数，将房间设置为有人入住状态
     def checkin(self):
@@ -79,19 +96,12 @@ class Room(models.Model):
     def checkout(self):
         if not self.is_occupied:
             return -1
+        self.turn_off()
         self.is_occupied = False
         fee = self.fee
-        self.turn_off()
         self.fee = 0.0
         self.save()
         return fee
-
-    # 计费函数，每秒钟费用+=fee_rate
-    def calculate_fee(self):
-        self.fee += self.fee_rate
-        self.save()
-        self.timer = threading.Timer(1, self.calculate_fee)
-        self.timer.start()
 
     # 空调开启时调用该函数，将空调设置为开启状态并开始计费
     def turn_on(self):
@@ -99,8 +109,6 @@ class Room(models.Model):
             return False
         self.on = True
         self.save()
-        self.timer = threading.Timer(1, self.calculate_fee)
-        self.timer.start()
         return True
 
     # 空调关闭时调用该函数，将空调设置为关闭状态并停止计费
@@ -109,8 +117,6 @@ class Room(models.Model):
             return False
         self.on = False
         self.save()
-        if self.timer is not None:
-            self.timer.cancel()
         return True
 
     # 计算费率函数（温度越高，费率越低；风速越大，费率越高）
@@ -131,6 +137,16 @@ class Room(models.Model):
             if not room.is_occupied:
                 return room.room_id
         return 0
+
+    # 计费函数，每秒钟调用一次
+    @staticmethod
+    def calculate_fee():
+        for room in Room.objects.all():
+            if room.is_occupied and room.on:
+                room.fee += room.fee_rate
+                room.save()
+        timer = threading.Timer(5, Room.calculate_fee)
+        timer.start()
 
 
 # 用户的所有请求，包括温度调整、风速调整、开关机、入住退房等
@@ -204,19 +220,27 @@ class Request(models.Model):
         if self.request_type == 6:
             fee = room.checkout()
             self.fee = fee
+            if fee == -1:
+                return False
         if self.request_type == 0:
-            if self.on:
-                room.turn_off()
+            if room.on:
+                if not room.turn_off():
+                    return False
             else:
-                room.turn_on()
+                if not room.turn_on():
+                    return False
         elif self.request_type == 1:
-            room.increase_temp()
+            if not room.increase_temp():
+                return False
         elif self.request_type == 2:
-            room.decrease_temp()
+            if not room.decrease_temp():
+                return False
         elif self.request_type == 3:
-            room.increase_speed()
+            if not room.increase_speed():
+                return False
         elif self.request_type == 4:
-            room.decrease_speed()
+            if not room.decrease_speed():
+                return False
         self.write()
         return True
 

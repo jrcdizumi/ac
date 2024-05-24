@@ -10,30 +10,33 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         fan_speeds = {'Low': 1, 'Medium': 2, 'High': 3}
         # 随机选择几个房间开启空调
+        Room.calculate_fee()
         rooms = Room.objects.all()
         while True:
             for room in rooms:
                 if random.random() > 0.5:
-                    room.turn_on()
+                    request = Request(room_id=room.room_id, request_type=0)
+                    request.process()
             time.sleep(5)
             for room in rooms:
                 if random.random() > 0.5:
-                    room.increase_speed()
+                    request = Request(room_id=room.room_id, request_type=1)
+                    request.process()
             time.sleep(5)
             for room in rooms:
                 if random.random() > 0.5:
-                    room.decrease_speed()
+                    request = Request(room_id=room.room_id, request_type=2)
+                    request.process()
             time.sleep(5)
             for room in rooms:
                 if random.random() > 0.5:
-                    room.increase_temp()
+                    request = Request(room_id=room.room_id, request_type=3)
+                    request.process()
             time.sleep(5)
             for room in rooms:
                 if random.random() > 0.5:
-                    room.decrease_temp()
-            for room in rooms:
-                if random.random() > 0.5:
-                    room.turn_off()
+                    request = Request(room_id=room.room_id, request_type=4)
+                    request.process()
             time.sleep(5)
 
 

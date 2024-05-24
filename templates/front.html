@@ -160,10 +160,10 @@
             fetch('/check_in/')
             .then(response => response.json())
             .then(data => {
-                if(data[0].room_id == -1)
+                if(data[0]['room_id'] == -1)
                     alert("房间已满，无法办理入住");
                 else
-                    alert("办理入住成功，房间号为" + data[0].room_id.toString())
+                    alert("办理入住成功，房间号为" + data[0]['room_id'].toString())
             });
         }
         function check_out() {
@@ -173,11 +173,11 @@
             fetch('/check_out?id=' + input)
             .then(response => response.json())
             .then(data => {
-                if(data[0][0]['fee'] == -1)
+                if(data[0]['fee'] == -1)
                     alert("该房间无人入住")
                 else{
                     zd = data[0]
-                    xd = [data[1][0]['fields']]
+                    xd = data[1][0]['fields']
                     console.log(zd)
                     console.log(xd)
                     zd_csv = convertJSONtoCSV(zd)
