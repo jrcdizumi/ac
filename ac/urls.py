@@ -20,5 +20,6 @@ from hotel.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-
+    path('monitor/', get_monitor_page),
+    path('refresh_monitor/', refresh_monitor, name='refresh_monitor'),
 ]
