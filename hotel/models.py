@@ -5,7 +5,6 @@ import django
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 from datetime import timedelta
-from django.db.models import Q
 
 # Create your models here.
 class Room(models.Model):
@@ -197,16 +196,16 @@ class Request(models.Model):
         # 如果没有传入right_time,则默认为当前时间
         if right_time is None:
             right_time = timezone.now()
-        # 如果没有传入left_time,则默认为right_time的前三天
+        # 如果没有传入left_time,则默认为right_time的前1天
         if left_time is None:
-            left_time = right_time - timedelta(days=3)
+            left_time = right_time - timedelta(days=1)
         if room_id is None:
             return Request.objects.filter(request_time__range=(left_time, right_time))
         if start_time is None:
             return Request.objects.filter(room_id=room_id, request_time__range=(left_time, right_time))
         return Request.objects.filter(room_id=room_id, start_time=start_time, request_time__range=(left_time, right_time))
 
-    #将年、月、日、时、分、秒格式化
+    # 将年、月、日、时、分、秒格式化
     @staticmethod
     def time_to_timestamp(year, month, day, hour=0, minute=0, second=0):
         return datetime(year, month, day, hour, minute, second)
