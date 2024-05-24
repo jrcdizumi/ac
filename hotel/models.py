@@ -15,7 +15,7 @@ class Room(models.Model):
         (1, "LOW")
     ]
 
-    room_id = models.IntegerField(verbose_name='房间号', default=1, primary_key=True)
+    room_id = models.IntegerField(verbose_name='房间号', default=0, primary_key=True)
 
     # 入住时间
     start_time = models.DateTimeField(verbose_name='入住时间', default=timezone.now)
@@ -120,7 +120,7 @@ class Room(models.Model):
         for room in Room.objects.all():
             if not room.is_occupied:
                 return room.room_id
-        return None
+        return -1
 
 
 # 用户的所有请求，包括温度调整、风速调整、开关机、入住退房等
@@ -130,7 +130,9 @@ class Request(models.Model):
         (1, 'increase temp'),
         (2, 'decrease temp'),
         (3, 'increase speed'),
-        (4, 'decrease speed')
+        (4, 'decrease speed'),
+        (5, 'check in'),
+        (6, 'check out')
     ]
     FAN_SPEED = [
         (3, "HIGH"),
@@ -140,13 +142,13 @@ class Request(models.Model):
 
     request_time = models.DateTimeField(verbose_name='请求时间', default=timezone.now)
 
-    room_id = models.IntegerField(verbose_name='房间号', default=1)
+    room_id = models.IntegerField(verbose_name='房间号', default=0)
 
     # 入住时间，和room_id一起区分不同客人
     start_time = models.DateTimeField(verbose_name='入住时间', default=timezone.now)
 
     # 0: turn on/off; 1: increase temp; 2: decrease temp; 3: increase speed; 4: decrease speed
-    request_type = models.IntegerField(verbose_name='请求类型', default=0, choices=REQUEST_CHOICE)
+    request_type = models.IntegerField(verbose_name='请求类型', default=-1, choices=REQUEST_CHOICE)
 
     # 请求后的温度
     current_temp = models.FloatField(verbose_name='温度', default=25.0)
@@ -174,9 +176,23 @@ class Request(models.Model):
         self.on = room.on
         self.save()
 
-    # 根据请求类型处理请求并写入数据库
+    # 根据请求类型处理请求并写入数据库,返回值为是否处理成功
     def process(self):
+        if self.request_type == -1:
+            return False
+        if self.request_type == 5:
+            self.room_id = Room.get_empty_room()
+            if self.room_id == 0:
+                return False
+            else:
+                room = Room.get_room(self.room_id)
+                room.checkin()
+        if self.room_id == 0:
+            return False
         room = Room.get_room(self.room_id)
+        if self.request_type == 6:
+            fee = room.checkout()
+            self.fee = fee
         if self.request_type == 0:
             if self.on:
                 room.turn_off()
@@ -191,6 +207,7 @@ class Request(models.Model):
         elif self.request_type == 4:
             room.decrease_speed()
         self.write()
+        return True
 
     # 根据房间号、入住时间和请求时间的区间获取请求列表
     @staticmethod
