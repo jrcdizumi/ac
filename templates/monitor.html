@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>监控界面</title>
+    <title>空调后台监控</title>
     <style>
         .room-container {
             display: flex;
             flex-wrap: wrap;
-            justify-content: space-between;
+            justify-content: flex-start; /* Change from space-between to flex-start */
+            padding: 0; /* Add this line to remove padding */
         }
         .room-box {
             border: 1px solid black;
-            margin: 10px;
+            margin: 0; /* Change from 10px to 0 */
             padding: 10px;
             width: calc(33% - 20px); /* 33% for three boxes per row, minus margin */
             box-sizing: border-box; /* include padding and border in the box's total width and height */
@@ -48,7 +49,7 @@
     </script>
 </head>
 <body>
-    <h1>监控</h1>
+    <h1>空调后台监控</h1>
     <div id="rooms-container" class="room-container">
         <!-- Room data will be inserted here by JavaScript -->
     </div>
