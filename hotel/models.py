@@ -102,7 +102,8 @@ class Room(models.Model):
             return False
         self.on = False
         self.save()
-        self.timer.cancel()
+        if self.timer is not None:
+            self.timer.cancel()
 
     # 计算费率函数（温度越高，费率越低；风速越大，费率越高）
     def calculate_fee_rate(self):
