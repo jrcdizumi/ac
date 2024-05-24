@@ -44,25 +44,25 @@ class Room(models.Model):
     # 当前温度+1，但不大于30度
     def increase_temp(self):
         self.current_temp = min(self.current_temp + 1, 30)
-        self.current_fee = self.calculate_fee()
+        self.fee_rate = self.calculate_fee_rate()
         self.save()
 
     # 当前温度-1，但不小于16度
     def decrease_temp(self):
         self.current_temp = max(self.current_temp - 1, 16)
-        self.current_fee = self.calculate_fee()
+        self.fee_rate = self.calculate_fee_rate()
         self.save()
 
     # 风速+1，但不大于3
     def increase_speed(self):
         self.fan_speed = min(self.fan_speed + 1, 3)
-        self.current_fee = self.calculate_fee()
+        self.fee_rate = self.calculate_fee_rate()
         self.save()
 
     # 风速-1，但不小于1
     def decrease_speed(self):
         self.fan_speed = max(self.fan_speed - 1, 1)
-        self.current_fee = self.calculate_fee()
+        self.fee_rate = self.calculate_fee_rate()
         self.save()
 
     # 入住时调用该函数，将房间设置为有人入住状态
@@ -86,24 +86,32 @@ class Room(models.Model):
         self.save()
         return fee
 
-    # 空调开启时调用该函数，将空调设置为开启状态并开始计费，每秒钟费用+=fee_rate
-    def turn_on(self):
-        if self.on:
-            return False
-        self.on = True
+    # 计费函数，每秒钟费用+=fee_rate
+    def calculate_fee(self):
         self.current_fee += self.fee_rate
         self.save()
-        self.timer = threading.Timer(1, self.turn_on)
+        self.timer = threading.Timer(1, self.calculate_fee)
         self.timer.start()
+
+    # 空调开启时调用该函数，将空调设置为开启状态并开始计费
+    def turn_on(self):
+        if self.on or not self.is_occupied:
+            return False
+        self.on = True
+        self.save()
+        self.timer = threading.Timer(1, self.calculate_fee)
+        self.timer.start()
+        return True
 
     # 空调关闭时调用该函数，将空调设置为关闭状态并停止计费
     def turn_off(self):
-        if not self.on:
+        if not self.on or not self.is_occupied:
             return False
         self.on = False
         self.save()
         if self.timer is not None:
             self.timer.cancel()
+        return True
 
     # 计算费率函数（温度越高，费率越低；风速越大，费率越高）
     def calculate_fee_rate(self):
@@ -115,15 +123,6 @@ class Room(models.Model):
     @staticmethod
     def get_room(room_id):
         return Room.objects.get(room_id=room_id)
-
-    # 创建n个房间，如果数据库中已经有房间，则不会创建
-    @staticmethod
-    def create_room(n=6):
-        for i in range(1, n + 1):
-            try:
-                Room.objects.get(room_id=i)
-            except ObjectDoesNotExist:
-                Room.objects.create(room_id=i)
 
     # 查询第一个没人入住的房间，返回房间id
     @staticmethod
