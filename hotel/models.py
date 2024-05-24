@@ -234,4 +234,6 @@ class Request(models.Model):
     # 从数据库中读取某个房间不同的入住时间的退房请求
     @staticmethod
     def get_check_out(room_id):
+        if room_id == 0:
+            return Request.objects.filter(request_type=6)
         return Request.objects.filter(room_id=room_id, request_type=6)
