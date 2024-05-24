@@ -121,7 +121,7 @@ class Room(models.Model):
         for room in Room.objects.all():
             if not room.is_occupied:
                 return room.room_id
-        return -1
+        return 0
 
 
 # 用户的所有请求，包括温度调整、风速调整、开关机、入住退房等
