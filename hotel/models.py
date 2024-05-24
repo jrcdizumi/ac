@@ -88,6 +88,8 @@ class Room(models.Model):
 
     # 空调开启时调用该函数，将空调设置为开启状态并开始计费，每秒钟费用+=fee_rate
     def turn_on(self):
+        if self.on:
+            return False
         self.on = True
         self.current_fee += self.fee_rate
         self.save()
@@ -96,6 +98,8 @@ class Room(models.Model):
 
     # 空调关闭时调用该函数，将空调设置为关闭状态并停止计费
     def turn_off(self):
+        if not self.on:
+            return False
         self.on = False
         self.save()
         self.timer.cancel()
