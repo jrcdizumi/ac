@@ -105,7 +105,7 @@ class Room(models.Model):
     def get_room(room_id):
         return Room.objects.get(room_id=room_id)
 
-    #创建n个房间，如果数据库中已经有房间，则不会创建
+    # 创建n个房间，如果数据库中已经有房间，则不会创建
     @staticmethod
     def create_room(n=6):
         for i in range(1, n + 1):
@@ -113,6 +113,14 @@ class Room(models.Model):
                 Room.objects.get(room_id=i)
             except ObjectDoesNotExist:
                 Room.objects.create(room_id=i)
+
+    # 查询第一个没人入住的房间，返回房间id
+    @staticmethod
+    def get_empty_room():
+        for room in Room.objects.all():
+            if not room.is_occupied:
+                return room.room_id
+        return None
 
 # 用户的所有请求，包括温度调整、风速调整、开关机、入住退房等
 class Request(models.Model):
