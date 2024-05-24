@@ -88,7 +88,7 @@ class Room(models.Model):
 
     # 计费函数，每秒钟费用+=fee_rate
     def calculate_fee(self):
-        self.current_fee += self.fee_rate
+        self.fee += self.fee_rate
         self.save()
         self.timer = threading.Timer(1, self.calculate_fee)
         self.timer.start()
