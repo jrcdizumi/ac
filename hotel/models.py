@@ -171,7 +171,8 @@ class Request(models.Model):
         self.start_time = room.start_time
         self.current_temp = room.current_temp
         self.fan_speed = room.fan_speed
-        self.fee = room.fee
+        if self.request_type != 6:
+            self.fee = room.fee
         self.fee_rate = room.fee_rate
         self.on = room.on
         self.save()
@@ -228,3 +229,8 @@ class Request(models.Model):
     @staticmethod
     def time_to_timestamp(year, month, day, hour=0, minute=0, second=0):
         return datetime(year, month, day, hour, minute, second)
+
+    # 从数据库中读取某个房间不同的入住时间的退房请求
+    @staticmethod
+    def get_check_out(room_id):
+        return Request.objects.filter(room_id=room_id, request_type=6)
