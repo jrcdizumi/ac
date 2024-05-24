@@ -67,13 +67,18 @@ class Room(models.Model):
 
     # 入住时调用该函数，将房间设置为有人入住状态
     def checkin(self):
+        if self.is_occupied:
+            return False
         self.is_occupied = True
         self.fee = 0.0
         self.start_time = timezone.now()
         self.save()
+        return True
 
     # 退房时调用该函数，返回当前费用、自动关闭空调并将费用清零
     def checkout(self):
+        if not self.is_occupied:
+            return -1
         self.is_occupied = False
         fee = self.fee
         self.turn_off()
@@ -83,6 +88,8 @@ class Room(models.Model):
 
     # 空调开启时调用该函数，将空调设置为开启状态并开始计费，每秒钟费用+=fee_rate
     def turn_on(self):
+        if self.on:
+            return False
         self.on = True
         self.current_fee += self.fee_rate
         self.save()
@@ -91,6 +98,8 @@ class Room(models.Model):
 
     # 空调关闭时调用该函数，将空调设置为关闭状态并停止计费
     def turn_off(self):
+        if not self.on:
+            return False
         self.on = False
         self.save()
         self.timer.cancel()
@@ -121,7 +130,7 @@ class Room(models.Model):
         for room in Room.objects.all():
             if not room.is_occupied:
                 return room.room_id
-        return -1
+        return 0
 
 
 # 用户的所有请求，包括温度调整、风速调整、开关机、入住退房等
@@ -234,4 +243,6 @@ class Request(models.Model):
     # 从数据库中读取某个房间不同的入住时间的退房请求
     @staticmethod
     def get_check_out(room_id):
+        if room_id == 0:
+            return Request.objects.filter(request_type=6)
         return Request.objects.filter(room_id=room_id, request_type=6)

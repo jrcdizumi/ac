@@ -22,4 +22,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('monitor/', get_monitor_page),
     path('refresh_monitor/', refresh_monitor, name='refresh_monitor'),
+    
+    path('front/', get_front_page),
+    path('check_in/', check_in),
+    path('check_out/', check_out),
 ]
