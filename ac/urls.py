@@ -18,8 +18,20 @@ from django.contrib import admin
 from django.urls import path
 from hotel.views import *
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('monitor/', get_monitor_page),
     path('refresh_monitor/', refresh_monitor, name='refresh_monitor'),
+
+    # 默认
+    path('', client_off),
+    path('on/', client_on),
+    # 客户端按钮
+    path('power/', power),
+    path('high/', change_high),
+    path('mid/', change_mid),
+    path('low/', change_low),
+    path('up/', change_up),
+    path('down/', change_down),
 ]
