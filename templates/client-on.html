@@ -5,7 +5,21 @@
 	<meta charset="UTF-8">
 	<title>Client-UI</title>
 	<link rel="stylesheet" href="/static/css/my-client.css">
-
+    <style>
+    .bordered {
+        border: 1px solid black;
+        width: 500px;  /* 你可以根据需要更改这个值 */
+        height: 300px;
+        margin-left: auto;
+        margin-right: auto;
+        transform: scale(2);
+        transform-origin: top left;
+    }
+    .bordered2 {
+        width: 300px;  /* 你可以根据需要更改这个值 */
+        height: 200px;
+    }
+    </style>
 	<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js">
 	</script>
 {#	<script src="/static/js/my-client.js"></script>#}
@@ -147,14 +161,14 @@ $(document).ready(function(){
 <body>
 	<div id="container" >
 		<div id="table" width="500">
-			<table>
+			<table class="bordered">
 				<tr>
 					<td colspan="3" id="head">
 						<h2>空调控制面板</h2>
 					</td>
 				</tr>
 				<tr>
-					<td colspan="2">
+					<td colspan="2" class="bordered2">
 						<div id="screen">
 							<div id="time">年月日 星期 --:--:--</div>
 							<div id="temperature_box">
