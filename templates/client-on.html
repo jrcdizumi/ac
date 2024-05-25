@@ -47,12 +47,24 @@ $(document).ready(function(){
 
 	<script type="text/javascript">
     $(document).ready(function(){
-	//自动刷新页面,2min
-	setTimeout(function(){
+	    //自动刷新页面,30s
+	    setTimeout(function(){
 	    location.reload();
-	}, 120000);
-
-})
+	    }, 30000);
+    });
+    $(document).ready(function() {
+        setInterval(function () {
+            $.ajax({
+                url: '/get_status',  // 服务器端处理请求的URL
+                type: 'GET',  // 请求方法，可以是GET或POST
+                success: function (data) {  // 服务器成功响应请求后执行的函数，data是服务器返回的数据
+                    if (data.status == false) {
+                        window.location.href = '/';  // 如果状态为假，跳转到/页面
+                    }
+                }
+            });
+        }, 10000);
+    });// 每隔10秒 发送一次请求
     </script>
     <script>
         $(document).ready(function(){
@@ -68,19 +80,18 @@ $(document).ready(function(){
                 });
             });
         });
-        $(document).ready(function(){
-            $('#btn_mid').click(function(e){
-            e.preventDefault();  // 阻止表单的默认提交行为
-            $.ajax({
-                url: '/mid',  // 服务器端处理请求的URL
-                type: 'GET',  // 请求方法，可以是GET或POST
-                success: function(data) {  // 服务器成功响应请求后执行的函数，data是服务器返回的数据
-                    // 更新网页上的风速信息
-                    $('#wind_speed').text('风速：' + data.fan_speed);
-                    }
-                });
-            });
-        });
+        {#$(document).ready(function(){#}
+        {#    $('#btn_mid').click(function(e){#}
+        {#    e.preventDefault();  // 阻止表单的默认提交行为#}
+        {#    $.ajax({#}
+        {#        url: '/mid',  // 服务器端处理请求的URL#}
+        {#        type: 'GET',  // 请求方法，可以是GET或POST#}
+        {#        success: function(data) {  // 服务器成功响应请求后执行的函数，data是服务器返回的数据#}
+        {#            // 更新网页上的风速信息#}
+        {#            $('#wind_speed').text('风速：' + data.fan_speed);#}
+        {#            }#}
+        {#        });#}
+        {#    });});#}
         $(document).ready(function(){
             $('#btn_low').click(function(e){
             e.preventDefault();  // 阻止表单的默认提交行为
@@ -103,7 +114,7 @@ $(document).ready(function(){
                 type: 'GET',  // 请求方法，可以是GET或POST
                 success: function(data) {  // 服务器成功响应请求后执行的函数，data是服务器返回的数据
                     // 更新网页上的风速信息
-                    $('#temperature').text(data.temp);
+                    $('#temperature').text(data.temp+"℃");
                     }
                 });
             });
@@ -116,7 +127,7 @@ $(document).ready(function(){
                 type: 'GET',  // 请求方法，可以是GET或POST
                 success: function(data) {  // 服务器成功响应请求后执行的函数，data是服务器返回的数据
                     // 更新网页上的风速信息
-                    $('#temperature').text(data.temp);
+                    $('#temperature').text(data.temp+"℃");
                     }
                 });
             });
@@ -130,11 +141,11 @@ $(document).ready(function(){
                 success: function(data) {  // 服务器成功响应请求后执行的函数，data是服务器返回的数据
                     // 更新网页上的风速和费用信息
                     {#$('#wind_speed').text('风速：' + data.fan_speed);#}
-                    $('#fee').text('费用：￥' + data.fee);  
+                    $('#fee').text('费用：￥' + data.fee);
                 }
             });
         }, 2000);  // 每隔2秒 发送一次请求
-});
+    });
     </script>
 </head>
 
@@ -154,7 +165,7 @@ $(document).ready(function(){
 							<div id="time">年月日 星期 --:--:--</div>
 							<div id="temperature_box">
 								<span id="const_set">设置温度</span>
-								<span id="temperature">{{target_temp}}℃</span>
+								<span id="temperature">{{current_temp}}℃</span>
 							</div>
 							<table id="info_box">
 								<tr>
@@ -182,14 +193,14 @@ $(document).ready(function(){
 					</td>
 					<td>
 						<div id="wind_control">
-								<form action="/high" method="get">
-									<input id="btn_high" type="submit" value="高速">
+                                <form action="/high" method="get">
+									<input id="btn_high" type="submit" value="加速 △">
 								</form>
-								<form action="/mid" method="get">
-									<input id="btn_mid" type="submit" value="中速">
-								</form>
+{#								<form action="/mid" method="get">#}
+{#									<input id="btn_mid" type="submit" value="中速">#}
+{#								</form>#}
 								<form action="/low" method="get">
-									<input id="btn_low" type="submit" value="低速">
+									<input id="btn_low" type="submit" value="减速 ▽">
 								</form>
 {#									<button id="btn_save" type="button">submit</button>#}
 
