@@ -189,7 +189,9 @@ def change_high(request):  # 提高速度
 def change_low(request):  # 降低速度
     room_tid = get_room_id(request)
     room = Room.get_room(room_tid)
+    print("before speed :"+speed_ch[room.fan_speed])
     Work.decrease_speed(room_tid)
+    print("after speed :"+speed_ch[room.fan_speed])
     data = {
         'fan_speed': speed_ch[room.fan_speed],
     }
