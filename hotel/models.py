@@ -266,7 +266,11 @@ class Request(models.Model):
 
     # 从数据库中读取某个房间不同的入住时间的退房请求
     @staticmethod
-    def get_check_out(room_id):
-        if room_id == 0:
-            return Request.objects.filter(request_type=6)
-        return Request.objects.filter(room_id=room_id, request_type=6)
+    def get_check_out(room_id=None, left_time=None, right_time=None):
+        if right_time is None:
+            right_time = timezone.now()
+        if left_time is None:
+            left_time = right_time - timedelta(days=7)
+        if room_id is None:
+            return Request.objects.filter(request_type=6, request_time__range=(left_time - timedelta(seconds=1), right_time))
+        return Request.objects.filter(room_id=room_id, request_type=6, request_time__range=(left_time - timedelta(seconds=1), right_time))
