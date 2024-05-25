@@ -312,7 +312,7 @@ class Request(models.Model):
     # 将年、月、日、时、分、秒格式化
     @staticmethod
     def time_to_timestamp(year, month, day, hour=0, minute=0, second=0):
-        return datetime(year, month, day, hour, minute, second)
+        return datetime(year, month, day, hour, minute, second, 0, tzinfo=django.utils.timezone.get_current_timezone())
 
     # 从数据库中读取某个房间不同的入住时间的退房请求
     @staticmethod
