@@ -95,7 +95,7 @@ class RoomInfo:  # Room->字典
         # self.dic["target_temp"] = room.current_temp
         # self.dic["init_temp"] = RoomBuffer.init_temp[room.room_id]
         if room.current_temp is not None:
-            self.dic["current_temp"] = str(room.current_temp)
+            self.dic["current_temp"] = str(int(room.current_temp))
         self.dic["fan_speed"] = speed_ch[room.fan_speed]
         self.dic["fee"] = int(room.fee)
         self.dic["room_id"] = room.room_id
