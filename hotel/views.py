@@ -75,6 +75,7 @@ def check_out(request):
 
 
 # ============静态变量===========
+speed_ch = ["", "低速", "中速", "高速"]
 
 class RoomCounter:  # 分配房间号
     num = 0
@@ -93,8 +94,9 @@ class RoomInfo:  # Room->字典
     def __init__(self, room):
         # self.dic["target_temp"] = room.current_temp
         # self.dic["init_temp"] = RoomBuffer.init_temp[room.room_id]
-        self.dic["current_temp"] = str(room.current_temp)
-        self.dic["fan_speed"] = Room.FAN_SPEED[room.fan_speed - 1][1]
+        if room.current_temp is not None:
+            self.dic["current_temp"] = str(room.current_temp)
+        self.dic["fan_speed"] = speed_ch[room.fan_speed]
         self.dic["fee"] = int(room.fee)
         self.dic["room_id"] = room.room_id
 
@@ -164,7 +166,7 @@ def change_high(request):  # 高速
     else:
         if room.set_speed(3):
             data = {
-                'fan_speed': Room.FAN_SPEED[room.fan_speed - 1][1],
+                'fan_speed': speed_ch[room.fan_speed],
             }
             return JsonResponse(data)
         else:
@@ -179,7 +181,7 @@ def change_mid(request):  # 中速
     else:
         if room.set_speed(2):
             data = {
-                'fan_speed': Room.FAN_SPEED[room.fan_speed - 1][1],
+                'fan_speed': speed_ch[room.fan_speed],
             }
             return JsonResponse(data)
         else:
@@ -194,7 +196,7 @@ def change_low(request):  # 低速
     else:
         if room.set_speed(1):
             data = {
-                'fan_speed': Room.FAN_SPEED[room.fan_speed - 1][1],
+                'fan_speed': speed_ch[room.fan_speed],
             }
             return JsonResponse(data)
         else:
@@ -238,7 +240,7 @@ def get_fee(request):
     else:
         print("fee:"+str(room.fee))
         data = {
-            'fee': room.fee,
+            'fee': round(room.fee, 2),
         }
         return JsonResponse(data)
 #====================
