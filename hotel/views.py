@@ -103,7 +103,7 @@ class RoomInfo:  # Room->字典
 
 room_Id = RoomCounter  # 房间号与session_id对应
 room_info = RoomInfo  # 未开机时的房间信息
-Work = Request # 请求类
+Work = Request() # 请求类
 
 class RoomNumberExceededError(Exception):
     """Raised when the room number exceeds the limit"""
