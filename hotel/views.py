@@ -139,14 +139,17 @@ def client_on(request):
     room = Room.get_room(room_tid)
     if not room.on:
         room.turn_on()
+    print(RoomInfo(room).dic)
     return render(request, 'client-on.html', RoomInfo(room).dic)
 
 
 def power(request):  # 客户端-电源键
     room_tid = get_room_id(request)
     room = Room.get_room(room_tid)
+    # print("修改前: "+ str(room.on))
     if room.on:
         room.turn_off()
+        # print(room.on)
         return HttpResponseRedirect('/')
     else:
         room.turn_on()
@@ -161,7 +164,7 @@ def change_high(request):  # 高速
     else:
         if room.set_speed(3):
             data = {
-                'fan_speed': Room.FAN_SPEED[room.fan_speed + 1][1],
+                'fan_speed': Room.FAN_SPEED[room.fan_speed - 1][1],
             }
             return JsonResponse(data)
         else:
@@ -176,7 +179,7 @@ def change_mid(request):  # 中速
     else:
         if room.set_speed(2):
             data = {
-                'fan_speed': Room.FAN_SPEED[room.fan_speed + 1][1],
+                'fan_speed': Room.FAN_SPEED[room.fan_speed - 1][1],
             }
             return JsonResponse(data)
         else:
@@ -191,7 +194,7 @@ def change_low(request):  # 低速
     else:
         if room.set_speed(1):
             data = {
-                'fan_speed': Room.FAN_SPEED[room.fan_speed + 1][1],
+                'fan_speed': Room.FAN_SPEED[room.fan_speed - 1][1],
             }
             return JsonResponse(data)
         else:
@@ -233,6 +236,7 @@ def get_fee(request):
         }
         return JsonResponse(data)
     else:
+        print("fee:"+str(room.fee))
         data = {
             'fee': room.fee,
         }
