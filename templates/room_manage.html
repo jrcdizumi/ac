@@ -16,7 +16,7 @@
             margin: 0 auto;
             border: 2px solid black;
             padding: 20px;
-            position: relative; /* Add this line */
+            position: relative;
         }
         label {
             display: block;
@@ -30,12 +30,10 @@
         .onoffbutton {
             border: none;
             color: white;
-            padding: 10px;
+            padding: 0;  /* Change padding to 0 */
             text-align: center;
             text-decoration: none;
-            display: flex; /* Change from inline-block to flex */
-            justify-content: center; /* Center the text horizontally */
-            align-items: center; /* Center the text vertically */
+            display: inline-block;
             font-size: 12px;
             margin: 4px 2px;
             cursor: pointer;
@@ -43,6 +41,7 @@
             border-radius: 50%;
             width: 30px;
             height: 30px;
+            line-height: 30px;  /* Make sure this is the same as the button height */
             position: absolute;
             top: 10px;
             right: 10px;
@@ -53,8 +52,14 @@
         .onoffbutton.off {
             background-color: #ca2222;
         }
+        .submit-button {
+            display: block;
+            width: 100px;
+            margin: 20px auto;
+        }
     </style>
     <script>
+
         function toggleOnOff(button) {
             if (button.innerHTML == "Off") {
                 button.innerHTML = "On";
@@ -64,12 +69,57 @@
                 button.className = "onoffbutton off";
             }
         }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function submitForm(event) {
+            event.preventDefault();
+            const roomId = document.querySelector('#room_id').value;
+            const temp = document.querySelector('#temp').value;
+            const fanSpeed = document.querySelector('#fan_speed').value;
+            const onButton = document.querySelector('#on');
+            const ON = onButton.classList.contains('on');  // True if air conditioning is on, false otherwise
+            const csrftoken = getCookie('csrftoken');
+            fetch('/monitor_change/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify({ room_id: roomId, temp: temp, fan_speed: fanSpeed,on: ON }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status == 'success') {
+                    alert('修改成功');
+                } else {
+                    alert('修改失败,房间目前有人入住');
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
     </script>
 </head>
 <body>
-    <h1>中央空调控制</h1>
+    <h1>中央控制</h1>
     <p style="text-align: center; font-size: 25px;">房间号{{ room_id }}</p>
-    <form>
+    <form onsubmit="submitForm(event);">
+        <input type="hidden" id="room_id" name="room_id" value="{{ room_id }}">
         <label for="temp">温度:</label>
         <input type="number" id="temp" name="temp" value="{{ current_temp }}">
         <label for="fan_speed">风速:</label>
@@ -80,6 +130,7 @@
         </select>
         <label for="on">  </label>
         <button id="on" name="on" class="onoffbutton {% if on %}on{% else %}off{% endif %}" onclick="toggleOnOff(this); return false;">{% if on %}On{% else %}Off{% endif %}</button>
+        <input type="submit" class="submit-button" value="提交">
     </form>
 </body>
 </html>

@@ -41,6 +41,39 @@ def monitor_manage(request):
     else:
         return JsonResponse({'status': 'invalid request method'})
 
+#管路员修改
+def monitor_change(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        room_id = int(data.get('room_id'))
+        temp = float(data.get('temp'))
+        fan_speed = int(data.get('fan_speed'))
+        on = bool(data.get('on'))
+        # print(room_id)
+        # print(temp)
+        # print(fan_speed)
+        # print(on)
+        room = Room.get_room(room_id)
+        # print("================")
+        # print(room.current_temp)
+        # print(room.fee_rate)
+        # print(room.on)
+        if room is not None and room.is_occupied==False:
+            room.set_temp(temp)
+            room.set_speed(fan_speed)
+            if on:
+                room.on = True
+            else:
+                room.on = False
+            room.save()  # Save changes to the database
+            print("管理员修改成功")
+            return JsonResponse({'status': 'success'})
+        else:
+            print("管理员修改失败")
+            return JsonResponse({'status': 'failure'})
+    else:
+        return JsonResponse({'status': 'invalid request method'})
+
 
 def get_front_page(request):
     rooms = Room.objects.all()
