@@ -61,7 +61,7 @@ class Room(models.Model):
         return True
 
     # 修改温度为某个值，小于16度则修改为16度，大于30度则修改为30度
-    def change_temp(self, temp):
+    def set_temp(self, temp):
         if not self.on or not self.is_occupied:
             return False
         if temp < 16:
@@ -96,7 +96,7 @@ class Room(models.Model):
         return True
 
     # 修改风速为某个值，小于1则修改为1，大于3则修改为3
-    def change_speed(self, speed):
+    def set_speed(self, speed):
         if not self.on or not self.is_occupied:
             return False
         if speed < 1:
