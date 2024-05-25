@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from hotel.models import Room
+from hotel.models import Room, Request
 import random
 import time
 
@@ -9,12 +9,34 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         fan_speeds = {'Low': 1, 'Medium': 2, 'High': 3}
+        # 随机选择几个房间开启空调
+        Room.calculate_fee()
+        rooms = Room.objects.all()
         while True:
-            for room in Room.objects.all():
-                room.current_temp = random.randint(16, 30)  # Random current_temp between 16.0 and 30.0
-                room.fan_speed =random.randint(1, 3)
-                room.fee += round(random.uniform(0.0, 5.0), 2)  # Randomly increase fee
-                room.on = random.choice([True, False])  # Random on status
-                room.fee_rate = round(random.uniform(0.0, 5.0), 2)  # Random fee_rate between 0.0 and 5.0
-                room.save()
-            time.sleep(3)
+            for room in rooms:
+                if random.random() > 0.5:
+                    request = Request(room_id=room.room_id, request_type=0)
+                    request.process()
+            time.sleep(5)
+            for room in rooms:
+                if random.random() > 0.5:
+                    request = Request(room_id=room.room_id, request_type=1)
+                    request.process()
+            time.sleep(5)
+            for room in rooms:
+                if random.random() > 0.5:
+                    request = Request(room_id=room.room_id, request_type=2)
+                    request.process()
+            time.sleep(5)
+            for room in rooms:
+                if random.random() > 0.5:
+                    request = Request(room_id=room.room_id, request_type=3)
+                    request.process()
+            time.sleep(5)
+            for room in rooms:
+                if random.random() > 0.5:
+                    request = Request(room_id=room.room_id, request_type=4)
+                    request.process()
+            time.sleep(5)
+
+

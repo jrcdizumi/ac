@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
+        *{
+            margin:0;
+            padding:0;
+        }
+        body{
+            height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items: center;
+            flex-direction: column;
+            background-color: #e493d0;
+            background-image:
+                radial-gradient(closest-side, rgb(195, 117, 101),rgba(235, 105, 78, 0)),
+                radial-gradient(closest-side, rgb(230, 164, 209),rgba(243, 11, 164, 0)),
+                radial-gradient(closest-side, rgba(254, 234, 131, 1),rgba(254, 234, 131, 0)),
+                radial-gradient(closest-side, rgb(148, 127, 204),rgba(170, 142, 245, 0)),
+                radial-gradient(closest-side, rgb(102, 154, 143),rgba(248, 192, 147, 0));
+            background-size:
+                130vmax 130vmax,
+                80vmax 80vmax ,
+                90vmax 90vmax,
+                110vmax 110vmax,
+                90vmax 90vmax;
+            background-position:
+                -80vmax -80vmax,
+                60vmax -30vmax,
+                10vmax 10vmax,
+                -30vmax -10vmax,
+                50vmax 50vmax;
+            background-repeat:no-repeat;
+            animation: 10s movement linear infinite;
+            }
+        body::after{
+            content:'';
+            display:block;
+            position:fixed;
+            width:100%;
+            height:100%;
+            top:0;
+            left:0;
+            backdrop-filter:blur(10px);
+            -webkit-backdrop-filter:blur(10px);
+        }
+        @keyframes movement{
+            0%, 100%{
+            background-size:
+                130vmax 130vmax,
+                80vmax 80vmax ,
+                90vmax 90vmax,
+                110vmax 110vmax,
+                90vmax 90vmax;
+            background-position:
+                -80vmax -80vmax,
+                60vmax -30vmax,
+                10vmax 10vmax,
+                -30vmax -10vmax,
+                50vmax 50vmax;
+            }
+            25%{
+            background-size:
+                100vmax 100vmax,
+                90vmax 90vmax ,
+                100vmax 100vmax,
+                90vmax 90vmax,
+                60vmax 60vmax;
+            background-position:
+                -60vmax -90vmax,
+                50vmax -40vmax,
+                0vmax -20vmax,
+                -40vmax -20vmax,
+                40vmax 60vmax;
+            }
+            50%{
+            background-size:
+                80vmax 80vmax,
+                110vmax 110vmax ,
+                80vmax 80vmax,
+                60vmax 60vmax,
+                80vmax 80vmax;
+            background-position:
+                -50vmax -70vmax,
+                40vmax -30vmax,
+                10vmax 0vmax,
+                20vmax 10vmax,
+                30vmax 70vmax;
+            }
+            75%{
+            background-size:
+                90vmax 90vmax,
+                90vmax 90vmax ,
+                100vmax 100vmax,
+                90vmax 90vmax,
+                70vmax 70vmax;
+            background-position:
+                -50vmax -40vmax,
+                50vmax -30vmax,
+                20vmax 0vmax,
+                -10vmax 10vmax,
+                40vmax 70vmax;
+            }
+        }
+        .h1c {
+            position : relative;
+            z-index:10;
+            font-size:3rem;
+        }
+        .btn {
+            padding : 30px 60px;
+            margin : 30px;
+            border-radius: 10px;
+            background : none;
+            border : 2px solid #000000;
+            color : #000000;
+            position : relative;
+            transition : color 0.4s linear;
+            cursor : pointer;
+            z-index:10
+        }
+        .btn::before{
+            content : ' ';
+            position : absolute;
+            width : 100%;
+            height : 100%;
+            background-color : #000000;
+            transition : transform 0.5s;
+            transform-origin:0 0;
+            transition-timing-function : cubic-bezier(0.5, 1.6, 0.4, 0.7);
+            z-index : -1;
+        }
+        .btn:hover{
+            color: #fff
+        }
+        .common1:before{
+            left:0;
+            top:0;
+        }
+        .btn1::before{
+            transform: scaleX(0);
+        }
+        .btn:hover::before{
+            transform: scaleX(1);
+        }
+
+
+    </style>
+</head>
+<body>
+    <h1 class="h1c" width=100%>前台</h1>
+    <br><br><br><br>
+    <button class = "btn common1 btn1" onclick="check_in()">入住</button>
+    <button class = "btn common1 btn1" onclick="check_out()">退房</button>
+    <script>
+        function check_in() {
+            fetch('/check_in/')
+            .then(response => response.json())
+            .then(data => {
+                if(data[0]['room_id'] == -1)
+                    alert("房间已满，无法办理入住");
+                else
+                    alert("办理入住成功，房间号为" + data[0]['room_id'].toString())
+            });
+        }
+        function check_out() {
+            input = prompt("请输入房间号")
+            if(input === null || input.trim() === "" || !Number.isInteger(Number(input)))
+                return
+            fetch('/check_out?id=' + input)
+            .then(response => response.json())
+            .then(data => {
+                if(data[0]['fee'] == -1)
+                    alert("该房间无人入住")
+                else{
+                    zd = data[0]
+                    xd = data[1][0]['fields']
+                    console.log(zd)
+                    console.log(xd)
+                    zd_csv = convertJSONtoCSV(zd)
+                    xd_csv = convertJSONtoCSV(xd)
+                    downloadCSV(zd_csv, "账单.csv")
+                    downloadCSV(xd_csv, "详单.csv")
+                    alert("退房成功，已生成账单和详单")
+                }
+            });
+        }
+
+        function convertJSONtoCSV(jsonData) {
+            const separator = ',';
+            const keys = Object.keys(jsonData[0]);
+            let csv = keys.join(separator) + '\n';
+            jsonData.forEach(item => {
+                csv += keys.map(key => item[key]).join(separator) + '\n';
+            });
+            return csv;
+        }
+
+        function downloadCSV(csvContent, name){
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = name;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        }
+
+    </script>
+</body>
+</html>
