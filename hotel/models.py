@@ -10,9 +10,9 @@ from datetime import timedelta
 # Create your models here.
 class Room(models.Model):
     FAN_SPEED = [
-        (3, "HIGH"),
+        (1, "LOW"),
         (2, "MIDDLE"),
-        (1, "LOW")
+        (3, "HIGH")
     ]
 
     room_id = models.IntegerField(verbose_name='房间号', default=0, primary_key=True)
@@ -56,6 +56,17 @@ class Room(models.Model):
         if self.current_temp <= 16:
             return False
         self.current_temp = self.current_temp - 1
+        self.fee_rate = self.calculate_fee_rate()
+        self.save()
+        return True
+
+
+    def set_speed(self, speed):
+        if not self.on or not self.is_occupied:
+            return False
+        if speed < 1 or speed > 3:
+            return False
+        self.fan_speed = speed
         self.fee_rate = self.calculate_fee_rate()
         self.save()
         return True
