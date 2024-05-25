@@ -60,6 +60,19 @@ class Room(models.Model):
         self.save()
         return True
 
+    # 修改温度为某个值，小于16度则修改为16度，大于30度则修改为30度
+    def change_temp(self, temp):
+        if not self.on or not self.is_occupied:
+            return False
+        if temp < 16:
+            temp = 16
+        if temp > 30:
+            temp = 30
+        self.current_temp = temp
+        self.fee_rate = self.calculate_fee_rate()
+        self.save()
+        return True
+
     # 风速+1，但不大于3
     def increase_speed(self):
         if not self.on or not self.is_occupied:
@@ -78,6 +91,19 @@ class Room(models.Model):
         if self.fan_speed <= 1:
             return False
         self.fan_speed = self.fan_speed - 1
+        self.fee_rate = self.calculate_fee_rate()
+        self.save()
+        return True
+
+    # 修改风速为某个值，小于1则修改为1，大于3则修改为3
+    def change_speed(self, speed):
+        if not self.on or not self.is_occupied:
+            return False
+        if speed < 1:
+            speed = 1
+        if speed > 3:
+            speed = 3
+        self.fan_speed = speed
         self.fee_rate = self.calculate_fee_rate()
         self.save()
         return True
