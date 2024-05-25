@@ -173,11 +173,14 @@
             fetch('/check_out?id=' + input)
             .then(response => response.json())
             .then(data => {
-                if(data[0]['fee'] == -1)
+                if(data[0][0]['fee'] == -1)
                     alert("该房间无人入住")
                 else{
                     zd = data[0]
-                    xd = data[1][0]['fields']
+                    xd = []
+                    for (let i = 0; i < data[1].length; i++) {
+                        xd[i] = data[1][i]['fields']
+                    }
                     console.log(zd)
                     console.log(xd)
                     zd_csv = convertJSONtoCSV(zd)

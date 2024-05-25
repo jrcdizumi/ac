@@ -60,6 +60,19 @@ class Room(models.Model):
         self.save()
         return True
 
+    # 修改温度为某个值，小于16度则修改为16度，大于30度则修改为30度
+    def set_temp(self, temp):
+        if not self.on or not self.is_occupied:
+            return False
+        if temp < 16:
+            temp = 16
+        if temp > 30:
+            temp = 30
+        self.current_temp = temp
+        self.fee_rate = self.calculate_fee_rate()
+        self.save()
+        return True
+
     # 风速+1，但不大于3
     def increase_speed(self):
         if not self.on or not self.is_occupied:
@@ -78,6 +91,19 @@ class Room(models.Model):
         if self.fan_speed <= 1:
             return False
         self.fan_speed = self.fan_speed - 1
+        self.fee_rate = self.calculate_fee_rate()
+        self.save()
+        return True
+
+    # 修改风速为某个值，小于1则修改为1，大于3则修改为3
+    def set_speed(self, speed):
+        if not self.on or not self.is_occupied:
+            return False
+        if speed < 1:
+            speed = 1
+        if speed > 3:
+            speed = 3
+        self.fan_speed = speed
         self.fee_rate = self.calculate_fee_rate()
         self.save()
         return True
@@ -254,10 +280,10 @@ class Request(models.Model):
         if left_time is None:
             left_time = right_time - timedelta(days=1)
         if room_id is None:
-            return Request.objects.filter(request_time__range=(left_time, right_time))
+            return Request.objects.filter(request_time__range=(left_time - timedelta(seconds=1), right_time))
         if start_time is None:
-            return Request.objects.filter(room_id=room_id, request_time__range=(left_time, right_time))
-        return Request.objects.filter(room_id=room_id, start_time=start_time, request_time__range=(left_time, right_time))
+            return Request.objects.filter(room_id=room_id, request_time__range=(left_time - timedelta(seconds=1), right_time))
+        return Request.objects.filter(room_id=room_id, start_time=start_time, request_time__range=(left_time - timedelta(seconds=1), right_time))
 
     # 将年、月、日、时、分、秒格式化
     @staticmethod
@@ -266,7 +292,11 @@ class Request(models.Model):
 
     # 从数据库中读取某个房间不同的入住时间的退房请求
     @staticmethod
-    def get_check_out(room_id):
-        if room_id == 0:
-            return Request.objects.filter(request_type=6)
-        return Request.objects.filter(room_id=room_id, request_type=6)
+    def get_check_out(room_id=None, left_time=None, right_time=None):
+        if right_time is None:
+            right_time = timezone.now()
+        if left_time is None:
+            left_time = right_time - timedelta(days=7)
+        if room_id is None or room_id == 0:
+            return Request.objects.filter(request_type=6, request_time__range=(left_time - timedelta(seconds=1), right_time))
+        return Request.objects.filter(room_id=room_id, request_type=6, request_time__range=(left_time - timedelta(seconds=1), right_time))

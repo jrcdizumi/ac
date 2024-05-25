@@ -38,4 +38,5 @@ urlpatterns = [
     path('low/', change_low),
     path('up/', change_up),
     path('down/', change_down),
+    path('fee/', get_fee),
 ]
