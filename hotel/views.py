@@ -51,8 +51,11 @@ def check_out(request):
     request.request_type = 6
     request.process()
     fee = request.fee
-    req_list = json.loads(serialize('json', request.get_request(room_id, request.start_time,request.start_time)))
-    ret = [{'room_id' : room_id, 'fee' : fee}, req_list]
+    start_time = request.start_time
+    end_time = request.request_time
+    req_list = json.loads(serialize('json', request.get_request(room_id, request.start_time, request.start_time)))
+    print(req_list)
+    ret = [[{'room_id': room_id, 'fee': fee, 'start_time': start_time, 'end_time': end_time}], req_list]
     return JsonResponse(ret, safe=False)
 
 

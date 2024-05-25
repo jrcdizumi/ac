@@ -254,10 +254,10 @@ class Request(models.Model):
         if left_time is None:
             left_time = right_time - timedelta(days=1)
         if room_id is None:
-            return Request.objects.filter(request_time__range=(left_time, right_time))
+            return Request.objects.filter(request_time__range=(left_time - timedelta(seconds=1), right_time + timedelta(seconds=1)))
         if start_time is None:
-            return Request.objects.filter(room_id=room_id, request_time__range=(left_time, right_time))
-        return Request.objects.filter(room_id=room_id, start_time=start_time, request_time__range=(left_time, right_time))
+            return Request.objects.filter(room_id=room_id, request_time__range=(left_time - timedelta(seconds=1), right_time + timedelta(seconds=1)))
+        return Request.objects.filter(room_id=room_id, start_time=start_time, request_time__range=(left_time - timedelta(seconds=1), right_time + timedelta(seconds=1)))
 
     # 将年、月、日、时、分、秒格式化
     @staticmethod
