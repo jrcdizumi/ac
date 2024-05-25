@@ -184,7 +184,8 @@ class Request(models.Model):
         (3, 'increase speed'),
         (4, 'decrease speed'),
         (5, 'check in'),
-        (6, 'check out')
+        (6, 'check out'),
+        (7, 'set speed')
     ]
     FAN_SPEED = [
         (3, "HIGH"),
@@ -267,6 +268,9 @@ class Request(models.Model):
         elif self.request_type == 4:
             if not room.decrease_speed():
                 return False
+        elif self.request_type == 7:
+            if not room.set_speed(self.fan_speed):
+                return False
         self.write()
         return True
 
@@ -302,4 +306,3 @@ class Request(models.Model):
         return Request.objects.filter(room_id=room_id, request_type=6, request_time__range=(left_time - timedelta(seconds=1), right_time))
 
 
-Room.calculate_fee()
