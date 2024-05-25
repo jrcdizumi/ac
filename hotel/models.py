@@ -243,6 +243,12 @@ class Request(models.Model):
         self.room_id = room_id
         self.process()
 
+    def set_speed(self,room_id,fan_speed):
+        self.request_type = 7
+        self.room_id = room_id
+        self.fan_speed = fan_speed
+        self.process()
+
     # 根据房间号获取温度、风速、费用、费率以及空调状态并写入数据库
     def write(self):
         room = Room.get_room(self.room_id)
