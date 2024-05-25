@@ -34,7 +34,7 @@ urlpatterns = [
     # 客户端按钮
     path('power/', power),
     path('high/', change_high),
-    path('mid/', change_mid),
+    # path('mid/', change_mid),
     path('low/', change_low),
     path('up/', change_up),
     path('down/', change_down),
