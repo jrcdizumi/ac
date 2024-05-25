@@ -109,6 +109,7 @@ class Room(models.Model):
         if self.is_occupied:
             return False
         self.is_occupied = True
+        self.turn_off()
         self.fee = 0.0
         self.start_time = timezone.now()
         self.save()
