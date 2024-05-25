@@ -8,7 +8,7 @@
 
 	<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js">
 	</script>
-	<script src="/static/js/my-client.js"></script>
+{#	<script src="/static/js/my-client.js"></script>#}
 	<script>
 //==================================================
 $(document).ready(function(){
@@ -47,14 +47,95 @@ $(document).ready(function(){
 
 	<script type="text/javascript">
     $(document).ready(function(){
-	//自动刷新页面,30秒
+	//自动刷新页面,2min
 	setTimeout(function(){
 	    location.reload();
-	}, 30000);
+	}, 120000);
 
 })
     </script>
-
+    <script>
+        $(document).ready(function(){
+            $('#btn_high').click(function(e){
+            e.preventDefault();  // 阻止表单的默认提交行为
+            $.ajax({
+                url: '/high',  // 服务器端处理请求的URL
+                type: 'GET',  // 请求方法，可以是GET或POST
+                success: function(data) {  // 服务器成功响应请求后执行的函数，data是服务器返回的数据
+                    // 更新网页上的风速信息
+                    $('#wind_speed').text('风速：' + data.fan_speed);
+                    }
+                });
+            });
+        });
+        $(document).ready(function(){
+            $('#btn_mid').click(function(e){
+            e.preventDefault();  // 阻止表单的默认提交行为
+            $.ajax({
+                url: '/mid',  // 服务器端处理请求的URL
+                type: 'GET',  // 请求方法，可以是GET或POST
+                success: function(data) {  // 服务器成功响应请求后执行的函数，data是服务器返回的数据
+                    // 更新网页上的风速信息
+                    $('#wind_speed').text('风速：' + data.fan_speed);
+                    }
+                });
+            });
+        });
+        $(document).ready(function(){
+            $('#btn_low').click(function(e){
+            e.preventDefault();  // 阻止表单的默认提交行为
+            $.ajax({
+                url: '/low',  // 服务器端处理请求的URL
+                type: 'GET',  // 请求方法，可以是GET或POST
+                success: function(data) {  // 服务器成功响应请求后执行的函数，data是服务器返回的数据
+                    // 更新网页上的风速信息
+                    $('#wind_speed').text('风速：' + data.fan_speed);
+                    }
+                });
+            });
+        });
+        
+        $(document).ready(function(){
+            $('#btn_up').click(function(e){
+            e.preventDefault();  // 阻止表单的默认提交行为
+            $.ajax({
+                url: '/up',  // 服务器端处理请求的URL
+                type: 'GET',  // 请求方法，可以是GET或POST
+                success: function(data) {  // 服务器成功响应请求后执行的函数，data是服务器返回的数据
+                    // 更新网页上的风速信息
+                    $('#temperature').text(data.temp);
+                    }
+                });
+            });
+        });
+        $(document).ready(function(){
+            $('#btn_down').click(function(e){
+            e.preventDefault();  // 阻止表单的默认提交行为
+            $.ajax({
+                url: '/down',  // 服务器端处理请求的URL
+                type: 'GET',  // 请求方法，可以是GET或POST
+                success: function(data) {  // 服务器成功响应请求后执行的函数，data是服务器返回的数据
+                    // 更新网页上的风速信息
+                    $('#temperature').text(data.temp);
+                    }
+                });
+            });
+        });
+        
+        $(document).ready(function(){
+            setInterval(function(){
+            $.ajax({
+                url: '/get_fee',  // 服务器端处理请求的URL
+                type: 'GET',  // 请求方法，可以是GET或POST
+                success: function(data) {  // 服务器成功响应请求后执行的函数，data是服务器返回的数据
+                    // 更新网页上的风速和费用信息
+                    {#$('#wind_speed').text('风速：' + data.fan_speed);#}
+                    $('#fee').text('费用：￥' + data.fee);  
+                }
+            });
+        }, 2000);  // 每隔2秒 发送一次请求
+});
+    </script>
 </head>
 
 
@@ -77,9 +158,9 @@ $(document).ready(function(){
 							</div>
 							<table id="info_box">
 								<tr>
-									<td>
-										<p id="outdoor_tmp">室外温度：{{init_temp}}℃</p>
-									</td>
+{#									<td>#}
+{#										<p id="outdoor_tmp">室外温度：{{init_temp}}℃</p>#}
+{#									</td>#}
 									<td>
 										<p id="wind_speed">风速：{{fan_speed}}</p>
 									</td>
@@ -88,9 +169,9 @@ $(document).ready(function(){
 									</td>
 								</tr>
 								<tr>
-									<td>
-										<div id="indoor_tmp">室内温度：{{current_temp}}℃</div>
-									</td>
+{#									<td>#}
+{#										<div id="indoor_tmp">室内温度：{{current_temp}}℃</div>#}
+{#									</td>#}
 									<td>
 										<div id="fee">费用：￥{{ fee }}</div>
 									</td>
@@ -110,7 +191,7 @@ $(document).ready(function(){
 								<form action="/low" method="get">
 									<input id="btn_low" type="submit" value="低速">
 								</form>
-									<button id="btn_save" type="button">submit</button>
+{#									<button id="btn_save" type="button">submit</button>#}
 
 						</div>
 					</td>

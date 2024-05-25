@@ -3,17 +3,20 @@ from hotel.models import Room
 from hotel.models import Request
 from django.http import HttpResponse
 from django.http import JsonResponse
+from django.http import HttpResponseRedirect
 from django.core.serializers import serialize
 import json
+
 
 # Create your views here.
 #获取监控页面
 def get_monitor_page(request):
     rooms = Room.objects.all()
     return render(request, 'monitor.html', {'rooms': rooms})
-    
+
+
 #刷新监控数据
-def refresh_monitor(request):#监控界面获取数据
+def refresh_monitor(request):  #监控界面获取数据
     rooms = Room.objects.all()
     data = []
     for room in rooms:
@@ -22,25 +25,26 @@ def refresh_monitor(request):#监控界面获取数据
             'current_temp': room.current_temp,
             'fan_speed': room.get_fan_speed_display(),
             'fee': room.fee,
-            'on':room.on,
-            'fee_rate':room.fee_rate,
+            'on': room.on,
+            'fee_rate': room.fee_rate,
         })
     return JsonResponse(data, safe=False)
+
 
 def get_front_page(request):
     rooms = Room.objects.all()
     return render(request, 'front.html', {'rooms': rooms})
 
+
 def check_in(request):
     request = Request()
     request.request_type = 5
     ret = []
-    if(request.process()):
-        ret.append({'room_id' : request.room_id})
+    if (request.process()):
+        ret.append({'room_id': request.room_id})
     else:
-        ret.append({'room_id' : -1})
+        ret.append({'room_id': -1})
     return JsonResponse(ret, safe=False)
-
 
 
 def check_out(request):
@@ -59,7 +63,6 @@ def check_out(request):
     return JsonResponse(ret, safe=False)
 
 
-
 # ============静态变量===========
 
 class RoomCounter:  # 分配房间号
@@ -69,8 +72,7 @@ class RoomCounter:  # 分配房间号
 
 class RoomInfo:  # Room->字典
     dic = {
-        "target_temp": "--",
-        "init_temp": "--",
+        # "target_temp": "--",
         "current_temp": "--",
         "fan_speed": "--",
         "fee": 0,
@@ -78,22 +80,17 @@ class RoomInfo:  # Room->字典
     }
 
     def __init__(self, room):
-        self.dic["target_temp"] = room.target_temp
-        self.dic["init_temp"] = room.init_temp
-        self.dic["current_temp"] = int(room.current_temp)
-        self.dic["fan_speed"] = speed_ch[room.fan_speed]
+        # self.dic["target_temp"] = room.current_temp
+        # self.dic["init_temp"] = RoomBuffer.init_temp[room.room_id]
+        self.dic["current_temp"] = str(room.current_temp)
+        self.dic["fan_speed"] = Room.FAN_SPEED[room.fan_speed - 1][1]
         self.dic["fee"] = int(room.fee)
         self.dic["room_id"] = room.room_id
-class RoomBuffer:  # 房间数据缓存
-    on_flag = [None, False, False, False, False, False]
-    target_temp = [0, 25, 25, 25, 25, 25]  # 不要用数组。。。。
-    init_temp = [0, 32, 28, 30, 29, 35]
 
-room_id = RoomCounter  # 房间号与session_id对应
-room_info = RoomInfo # Room->字典
-room_data = RoomBuffer # 房间数据缓存
-speed_ch = ["", "高速", "中速", "低速"]
-state_ch = ["", "服务中", "等待", "关机", "休眠"]
+
+room_Id = RoomCounter  # 房间号与session_id对应
+room_info = RoomInfo  # 未开机时的房间信息
+
 
 class RoomNumberExceededError(Exception):
     """Raised when the room number exceeds the limit"""
@@ -107,35 +104,126 @@ def get_room_id(request):
         request.session.create()
         s_id = request.session.session_key
 
-    if s_id not in room_id.dic:
-        room_id.num += 1
-        if room_id.num > 5:
+    if s_id not in room_Id.dic:
+        room_Id.num += 1
+        if room_Id.num > 5:
             raise RoomNumberExceededError("Room number has exceeded the limit")
         else:
-            room_id.dic[s_id] = room_id.num
-            return room_id.dic[s_id]
+            room_Id.dic[s_id] = room_Id.num
+            return room_Id.dic[s_id]
     else:
-        return room_id.dic[s_id]
+        return room_Id.dic[s_id]
+
 
 def client_off(request):  # 第一次访问客户端界面、# 开机
-    room_id = get_room_id(request)
-    room = Room.get_room(room_id)
+    room_tid = get_room_id(request)
+    room = Room.get_room(room_tid)
     if room.on:
         room.turn_off()
+    return render(request, 'client-off.html', room_info.dic)
 
 
 def client_on(request):
-    pass
+    room_tid = get_room_id(request)
+    room = Room.get_room(room_tid)
+    if not room.on:
+        room.turn_on()
+    return render(request, 'client-on.html', RoomInfo(room).dic)
+
+
 def power(request):  # 客户端-电源键
-    pass
-def change_high(request):  # 客户端-高风
-    pass
+    room_tid = get_room_id(request)
+    room = Room.get_room(room_tid)
+    if room.on:
+        room.turn_off()
+        return HttpResponseRedirect('/')
+    else:
+        room.turn_on()
+        return HttpResponseRedirect('/on/')
+
+
+def change_high(request):  # 高速
+    room_tid = get_room_id(request)
+    room = Room.get_room(room_tid)
+    if not room.on:
+        pass
+    else:
+        if room.set_speed(3):
+            data = {
+                'fan_speed': Room.FAN_SPEED[room.fan_speed + 1][1],
+            }
+            return JsonResponse(data)
+        else:
+            pass
+
+
 def change_mid(request):  # 中速
-    pass
+    room_tid = get_room_id(request)
+    room = Room.get_room(room_tid)
+    if not room.on:
+        pass
+    else:
+        if room.set_speed(2):
+            data = {
+                'fan_speed': Room.FAN_SPEED[room.fan_speed + 1][1],
+            }
+            return JsonResponse(data)
+        else:
+            pass
+
+
 def change_low(request):  # 低速
-    pass
+    room_tid = get_room_id(request)
+    room = Room.get_room(room_tid)
+    if not room.on:
+        pass
+    else:
+        if room.set_speed(1):
+            data = {
+                'fan_speed': Room.FAN_SPEED[room.fan_speed + 1][1],
+            }
+            return JsonResponse(data)
+        else:
+            pass
+
+
 def change_up(request):  # 升高温度
-    pass
+    room_tid = get_room_id(request)
+    room = Room.get_room(room_tid)
+    if not room.on:
+        pass
+    else:
+        room.increase_temp()
+        data = {
+            'temp': room.current_temp,
+        }
+        return JsonResponse(data)
+
+
 def change_down(request):  # 降低温度
-    pass
+    room_tid = get_room_id(request)
+    room = Room.get_room(room_tid)
+    if not room.on:
+        pass
+    else:
+        room.decrease_temp()
+        data = {
+            'temp': room.current_temp,
+        }
+        return JsonResponse(data)
+
+
+def get_fee(request):
+    room_tid = get_room_id(request)
+    room = Room.get_room(room_tid)
+    if not room.on:
+        data = {
+            'fee': 0,
+        }
+        return JsonResponse(data)
+    else:
+        data = {
+            'fee': room.fee,
+        }
+        return JsonResponse(data)
 #====================
