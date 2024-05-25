@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 from django.http import HttpResponseRedirect
 from django.core.serializers import serialize
+from django.forms.models import model_to_dict
 import json
 
 
@@ -29,6 +30,16 @@ def refresh_monitor(request):  #监控界面获取数据
             'fee_rate': room.fee_rate,
         })
     return JsonResponse(data, safe=False)
+
+#监控打开管理界面
+def monitor_manage(request):
+    if request.method == 'GET':
+        room_id = request.GET.get('room_id')
+        room = Room.get_room(room_id)
+        room_dict = model_to_dict(room)
+        return render(request, 'room_manage.html', room_dict)
+    else:
+        return JsonResponse({'status': 'invalid request method'})
 
 
 def get_front_page(request):

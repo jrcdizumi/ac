@@ -300,3 +300,6 @@ class Request(models.Model):
         if room_id is None or room_id == 0:
             return Request.objects.filter(request_type=6, request_time__range=(left_time - timedelta(seconds=1), right_time))
         return Request.objects.filter(room_id=room_id, request_type=6, request_time__range=(left_time - timedelta(seconds=1), right_time))
+
+
+Room.calculate_fee()
