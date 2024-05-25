@@ -17,7 +17,7 @@
             box-sizing: border-box; /* include padding and border in the box's total width and height */
         }
         .on {
-            background-color: green;
+            background-color: rgb(177, 246, 177);
         }
         .off {
             background-color: gray;
@@ -35,7 +35,7 @@
                     box.className = 'room-box ' + (room.on ? 'on' : 'off');
                     box.innerHTML = `
                         <h2>房间号: ${room.room_id}</h2>
-                        <p>空调温度: ${room.on ? room.current_temp : ''}</p>
+                        <p>空调温度: ${room.on ? room.current_temp+ '℃' : ''}</p>
                         <p>风速: ${room.on ? room.fan_speed : ''}</p>
                         <p>费用: ${room.on ? room.fee.toFixed(2) : ''}</p>
                         <p>费率: ${room.on ? room.fee_rate : ''}</p>
