@@ -46,12 +46,6 @@ $(document).ready(function(){
 	</script>
 
 	<script type="text/javascript">
-    $(document).ready(function(){
-	    //自动刷新页面,30s
-	    setTimeout(function(){
-	    location.reload();
-	    }, 30000);
-    });
     $(document).ready(function() {
         setInterval(function () {
             $.ajax({
@@ -221,7 +215,7 @@ $(document).ready(function(){
 					</td>
 					<td>
 						<form action="/power" method="get">
-							<input id="btn_power" type="submit" value="">
+							<input id="btn_power" type="submit" value="on/off">
 						</form>
 
 					</td>

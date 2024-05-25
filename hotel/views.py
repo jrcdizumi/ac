@@ -166,8 +166,7 @@ def client_off(request):  # 第一次访问客户端界面、# 开机
     Work = Request()  # 请求类
     if room.on:
         Work.turn_off(room_tid)
-    room = Room.get_room(room_tid)
-    return render(request, 'client-off.html', room_info.dic)
+    return render(request, 'client-off.html', RoomInfo(room).dic)
 
 
 def client_on(request):
@@ -188,7 +187,6 @@ def power(request):  # 客户端-电源键
     Work = Request()  # 请求类
     if room.on:
         Work.turn_off(room_tid)
-        # print(room.on)
         return HttpResponseRedirect('/')
     else:
         Work.turn_on(room_tid)
@@ -267,7 +265,6 @@ def get_fee(request):
         }
         return JsonResponse(data)
     else:
-        print("fee:"+str(room.fee))
         data = {
             'fee': round(room.fee, 2),
         }

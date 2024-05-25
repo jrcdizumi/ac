@@ -8,40 +8,40 @@
 
 	<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js">
 	</script>
-{#	<script src="/static/js/my-client.js"></script>#}
-{#	<script>#}
-{#//==================================================#}
-{#$(document).ready(function(){#}
-{#	//每秒自动更新时间#}
-{#	setInterval(function(){#}
-{#		var myDate = new Date();#}
-{#		var year = myDate.getFullYear();#}
-{#		var month = myDate.getMonth()+1;#}
-{#		var day = myDate.getDate();#}
-{#		var weekday = myDate.getDay();#}
-{#		var weekdayCh = new Array("日","一","二","三","四","五","六");#}
-{#		var hours = myDate.getHours();#}
-{#		var minutes = myDate.getMinutes();#}
-{#		var seconds = myDate.getSeconds();#}
-{#		if(day<10){#}
-{#			day= "0" + day;#}
-{#		}#}
-{#		if(hours<10){#}
-{#			hours = "0" + hours;#}
-{#		}#}
-{#		if(minutes<10){#}
-{#			minutes = "0" + minutes;#}
-{#		}#}
-{#		if(seconds<10){#}
-{#			seconds = "0" + seconds;#}
-{#		}#}
-{#		$("#time").text(year+"年"+month+"月"+day+"日\t星期"+weekdayCh[weekday]+"\t"+hours+":"+minutes+":"+seconds);#}
-{#	}, 1000);#}
-{##}
-{#    })#}
-{##}
-{##}
-{#	</script>#}
+	<script src="/static/js/my-client.js"></script>
+	<script>
+//==================================================
+$(document).ready(function(){
+	//每秒自动更新时间
+	setInterval(function(){
+		var myDate = new Date();
+		var year = myDate.getFullYear();
+		var month = myDate.getMonth()+1;
+		var day = myDate.getDate();
+		var weekday = myDate.getDay();
+		var weekdayCh = new Array("日","一","二","三","四","五","六");
+		var hours = myDate.getHours();
+		var minutes = myDate.getMinutes();
+		var seconds = myDate.getSeconds();
+		if(day<10){
+			day= "0" + day;
+		}
+		if(hours<10){
+			hours = "0" + hours;
+		}
+		if(minutes<10){
+			minutes = "0" + minutes;
+		}
+		if(seconds<10){
+			seconds = "0" + seconds;
+		}
+		$("#time").text(year+"年"+month+"月"+day+"日\t星期"+weekdayCh[weekday]+"\t"+hours+":"+minutes+":"+seconds);
+	}, 1000);
+
+    })
+
+
+	</script>
 
     <script>
         $(document).ready(function(){
@@ -139,7 +139,7 @@
 					</td>
 					<td>
 						<form action="/power" method="get">
-							<input id="btn_power" type="submit" value="">
+							<input id="btn_power" type="submit" value="on/off">
 						</form>
 
 					</td>
