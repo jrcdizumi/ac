@@ -166,6 +166,7 @@ def client_off(request):  # 第一次访问客户端界面、# 开机
     Work = Request()  # 请求类
     if room.on:
         Work.turn_off(room_tid)
+    room = Room.get_room(room_tid)
     return render(request, 'client-off.html', room_info.dic)
 
 
@@ -175,6 +176,7 @@ def client_on(request):
     Work = Request()  # 请求类
     if not room.on:
         Work.turn_on(room_tid)
+    room = Room.get_room(room_tid)
     print(RoomInfo(room).dic)
     return render(request, 'client-on.html', RoomInfo(room).dic)
 
@@ -190,16 +192,16 @@ def power(request):  # 客户端-电源键
         return HttpResponseRedirect('/')
     else:
         Work.turn_on(room_tid)
+        if not room.is_occupied:
+            return HttpResponseRedirect('/')
         return HttpResponseRedirect('/on/')
 
 
 def change_high(request):  # 提高速度
     room_tid = get_room_id(request)
-    room = Room.get_room(room_tid)
     Work = Request()  # 请求类
-    print("before speed :"+speed_ch[room.fan_speed])
     Work.increase_speed(room_tid)
-    print("after speed :"+speed_ch[room.fan_speed])
+    room = Room.get_room(room_tid)
     data = {
         'fan_speed': speed_ch[room.fan_speed],
     }
@@ -224,9 +226,9 @@ def change_high(request):  # 提高速度
 
 def change_low(request):  # 降低速度
     room_tid = get_room_id(request)
-    room = Room.get_room(room_tid)
     Work = Request()  # 请求类
     Work.decrease_speed(room_tid)
+    room = Room.get_room(room_tid)
     data = {
         'fan_speed': speed_ch[room.fan_speed],
     }
@@ -236,10 +238,9 @@ def change_low(request):  # 降低速度
 
 def change_up(request):  # 升高温度
     room_tid = get_room_id(request)
-    room = Room.get_room(room_tid)
     Work = Request()  # 请求类
     Work.increase_temp(room_tid)
-    room.increase_temp()
+    room = Room.get_room(room_tid)
     data = {
         'temp': room.current_temp,
     }
@@ -248,9 +249,9 @@ def change_up(request):  # 升高温度
 
 def change_down(request):  # 降低温度
     room_tid = get_room_id(request)
-    room = Room.get_room(room_tid)
     Work = Request()  # 请求类
     Work.decrease_temp(room_tid)
+    room = Room.get_room(room_tid)
     data = {
         'temp': room.current_temp,
     }
@@ -281,3 +282,5 @@ def get_status(request):
     return JsonResponse(data)
 #====================
 
+
+Room.calculate_fee()
