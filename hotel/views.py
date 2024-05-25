@@ -161,7 +161,9 @@ def power(request):  # 客户端-电源键
 def change_high(request):  # 提高速度
     room_tid = get_room_id(request)
     room = Room.get_room(room_tid)
+    print("before speed :"+speed_ch[room.fan_speed])
     Work.increase_speed(room_tid)
+    print("after speed :"+speed_ch[room.fan_speed])
     data = {
         'fan_speed': speed_ch[room.fan_speed],
     }

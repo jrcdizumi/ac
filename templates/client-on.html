@@ -80,19 +80,18 @@ $(document).ready(function(){
                 });
             });
         });
-        $(document).ready(function(){
-            $('#btn_mid').click(function(e){
-            e.preventDefault();  // 阻止表单的默认提交行为
-            $.ajax({
-                url: '/mid',  // 服务器端处理请求的URL
-                type: 'GET',  // 请求方法，可以是GET或POST
-                success: function(data) {  // 服务器成功响应请求后执行的函数，data是服务器返回的数据
-                    // 更新网页上的风速信息
-                    $('#wind_speed').text('风速：' + data.fan_speed);
-                    }
-                });
-            });
-        });
+        {#$(document).ready(function(){#}
+        {#    $('#btn_mid').click(function(e){#}
+        {#    e.preventDefault();  // 阻止表单的默认提交行为#}
+        {#    $.ajax({#}
+        {#        url: '/mid',  // 服务器端处理请求的URL#}
+        {#        type: 'GET',  // 请求方法，可以是GET或POST#}
+        {#        success: function(data) {  // 服务器成功响应请求后执行的函数，data是服务器返回的数据#}
+        {#            // 更新网页上的风速信息#}
+        {#            $('#wind_speed').text('风速：' + data.fan_speed);#}
+        {#            }#}
+        {#        });#}
+        {#    });});#}
         $(document).ready(function(){
             $('#btn_low').click(function(e){
             e.preventDefault();  // 阻止表单的默认提交行为
