@@ -39,4 +39,5 @@ urlpatterns = [
     path('up/', change_up),
     path('down/', change_down),
     path('get_fee/', get_fee),
+    path('get_status/', get_status),
 ]

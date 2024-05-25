@@ -217,6 +217,31 @@ class Request(models.Model):
     # 请求后空调是否开启
     on = models.BooleanField(verbose_name='空调是否开启', default=False)
 
+    def turn_on(self,room_id):
+        self.request_type = 0
+        self.room_id = room_id
+        self.process()
+    def turn_off(self,room_id):
+        self.request_type = 0
+        self.room_id = room_id
+        self.process()
+    def increase_temp(self,room_id):
+        self.request_type = 1
+        self.room_id = room_id
+        self.process()
+    def decrease_temp(self,room_id):
+        self.request_type = 2
+        self.room_id = room_id
+        self.process()
+    def increase_speed(self,room_id):
+        self.request_type = 3
+        self.room_id = room_id
+        self.process()
+    def decrease_speed(self,room_id):
+        self.request_type = 4
+        self.room_id = room_id
+        self.process()
+
     # 根据房间号获取温度、风速、费用、费率以及空调状态并写入数据库
     def write(self):
         room = Room.get_room(self.room_id)

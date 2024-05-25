@@ -47,12 +47,26 @@ $(document).ready(function(){
 
 	<script type="text/javascript">
     $(document).ready(function(){
-	//自动刷新页面,2min
-	setTimeout(function(){
+	    //自动刷新页面,30s
+	    setTimeout(function(){
 	    location.reload();
-	}, 120000);
-
-})
+	    }, 30000);
+    });
+    $(document).ready(function() {
+        setInterval(function () {
+            $.ajax({
+                url: '/get_status',  // 服务器端处理请求的URL
+                type: 'GET',  // 请求方法，可以是GET或POST
+                success: function (data) {  // 服务器成功响应请求后执行的函数，data是服务器返回的数据
+                    if (data.status == true) {
+                        window.location.href = '/on/';  // 如果状态为真，跳转到/on/页面
+                    } else {
+                        window.location.href = '/';  // 如果状态为假，跳转到/页面
+                    }
+                }
+            });
+        }, 2000);
+    });// 每隔2秒 发送一次请求
     </script>
     <script>
         $(document).ready(function(){
@@ -130,11 +144,11 @@ $(document).ready(function(){
                 success: function(data) {  // 服务器成功响应请求后执行的函数，data是服务器返回的数据
                     // 更新网页上的风速和费用信息
                     {#$('#wind_speed').text('风速：' + data.fan_speed);#}
-                    $('#fee').text('费用：￥' + data.fee);  
+                    $('#fee').text('费用：￥' + data.fee);
                 }
             });
         }, 2000);  // 每隔2秒 发送一次请求
-});
+    });
     </script>
 </head>
 
@@ -182,14 +196,14 @@ $(document).ready(function(){
 					</td>
 					<td>
 						<div id="wind_control">
-								<form action="/high" method="get">
-									<input id="btn_high" type="submit" value="高速">
+                                <form action="/high" method="get">
+									<input id="btn_high" type="submit" value="speed up △">
 								</form>
-								<form action="/mid" method="get">
-									<input id="btn_mid" type="submit" value="中速">
-								</form>
+{#								<form action="/mid" method="get">#}
+{#									<input id="btn_mid" type="submit" value="中速">#}
+{#								</form>#}
 								<form action="/low" method="get">
-									<input id="btn_low" type="submit" value="低速">
+									<input id="btn_low" type="submit" value="speed down ▽">
 								</form>
 {#									<button id="btn_save" type="button">submit</button>#}
 

@@ -243,4 +243,12 @@ def get_fee(request):
             'fee': round(room.fee, 2),
         }
         return JsonResponse(data)
+
+def get_status(request):
+    room_tid = get_room_id(request)
+    room = Room.get_room(room_tid)
+    data = {
+        'status': room.on,
+    }
+    return JsonResponse(data)
 #====================

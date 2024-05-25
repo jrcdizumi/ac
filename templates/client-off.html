@@ -50,12 +50,6 @@
             });
         });
         $(document).ready(function(){
-            $('#btn_mid').click(function(e){
-                e.preventDefault();  // 阻止表单的默认提交行为
-            
-            });
-        });
-        $(document).ready(function(){
             $('#btn_low').click(function(e){
                 e.preventDefault();  // 阻止表单的默认提交行为
             });
@@ -118,13 +112,13 @@
 					<td>
 						<div id="wind_control">
 								<form action="/high" method="get">
-									<input id="btn_high" type="submit" value="高速">
+									<input id="btn_high" type="submit" value="speed up △">
 								</form>
-								<form action="/mid" method="get">
-									<input id="btn_mid" type="submit" value="中速">
-								</form>
+{#								<form action="/mid" method="get">#}
+{#									<input id="btn_mid" type="submit" value="中速">#}
+{#								</form>#}
 								<form action="/low" method="get">
-									<input id="btn_low" type="submit" value="低速">
+									<input id="btn_low" type="submit" value="speed down ▽">
 								</form>
 {#									<button id="btn_save" type="button">submit</button>#}
 
