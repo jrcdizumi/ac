@@ -62,8 +62,6 @@ class Room(models.Model):
 
     # 修改温度为某个值，小于16度则修改为16度，大于30度则修改为30度
     def set_temp(self, temp):
-        if not self.on or not self.is_occupied:
-            return False
         if temp < 16:
             temp = 16
         if temp > 30:
@@ -97,8 +95,6 @@ class Room(models.Model):
 
     # 修改风速为某个值，小于1则修改为1，大于3则修改为3
     def set_speed(self, speed):
-        if not self.on or not self.is_occupied:
-            return False
         if speed < 1:
             speed = 1
         if speed > 3:
@@ -243,11 +239,6 @@ class Request(models.Model):
         self.room_id = room_id
         self.process()
 
-    def set_speed(self,room_id,fan_speed):
-        self.request_type = 7
-        self.room_id = room_id
-        self.fan_speed = fan_speed
-        self.process()
 
     # 根据房间号获取温度、风速、费用、费率以及空调状态并写入数据库
     def write(self):
@@ -298,9 +289,6 @@ class Request(models.Model):
                 return False
         elif self.request_type == 4:
             if not room.decrease_speed():
-                return False
-        elif self.request_type == 7:
-            if not room.set_speed(self.fan_speed):
                 return False
         self.write()
         return True
