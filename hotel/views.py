@@ -7,14 +7,16 @@ from django.http import HttpResponseRedirect
 from django.core.serializers import serialize
 import json
 
+
 # Create your views here.
 #获取监控页面
 def get_monitor_page(request):
     rooms = Room.objects.all()
     return render(request, 'monitor.html', {'rooms': rooms})
-    
+
+
 #刷新监控数据
-def refresh_monitor(request):#监控界面获取数据
+def refresh_monitor(request):  #监控界面获取数据
     rooms = Room.objects.all()
     data = []
     for room in rooms:
@@ -23,25 +25,26 @@ def refresh_monitor(request):#监控界面获取数据
             'current_temp': room.current_temp,
             'fan_speed': room.get_fan_speed_display(),
             'fee': room.fee,
-            'on':room.on,
-            'fee_rate':room.fee_rate,
+            'on': room.on,
+            'fee_rate': room.fee_rate,
         })
     return JsonResponse(data, safe=False)
+
 
 def get_front_page(request):
     rooms = Room.objects.all()
     return render(request, 'front.html', {'rooms': rooms})
 
+
 def check_in(request):
     request = Request()
     request.request_type = 5
     ret = []
-    if(request.process()):
-        ret.append({'room_id' : request.room_id})
+    if (request.process()):
+        ret.append({'room_id': request.room_id})
     else:
-        ret.append({'room_id' : -1})
+        ret.append({'room_id': -1})
     return JsonResponse(ret, safe=False)
-
 
 
 def check_out(request):
@@ -58,7 +61,6 @@ def check_out(request):
     print(req_list)
     ret = [[{'room_id': room_id, 'fee': fee, 'start_time': start_time, 'end_time': end_time}], req_list]
     return JsonResponse(ret, safe=False)
-
 
 
 # ============静态变量===========
@@ -128,6 +130,7 @@ def client_on(request):
         room.turn_on()
     return render(request, 'client-on.html', RoomInfo(room).dic)
 
+
 def power(request):  # 客户端-电源键
     room_tid = get_room_id(request)
     room = Room.get_room(room_tid)
@@ -144,14 +147,15 @@ def change_high(request):  # 高速
     room = Room.get_room(room_tid)
     if not room.on:
         pass
-    else :
+    else:
         if room.set_speed(3):
-            data={
-                'fan_speed': Room.FAN_SPEED[room.fan_speed+1][1],
+            data = {
+                'fan_speed': Room.FAN_SPEED[room.fan_speed + 1][1],
             }
             return JsonResponse(data)
         else:
             pass
+
 
 def change_mid(request):  # 中速
     room_tid = get_room_id(request)
@@ -191,7 +195,7 @@ def change_up(request):  # 升高温度
     else:
         room.increase_temp()
         data = {
-            'temp':room.current_temp,
+            'temp': room.current_temp,
         }
         return JsonResponse(data)
 
@@ -205,6 +209,21 @@ def change_down(request):  # 降低温度
         room.decrease_temp()
         data = {
             'temp': room.current_temp,
+        }
+        return JsonResponse(data)
+
+
+def get_fee(request):
+    room_tid = get_room_id(request)
+    room = Room.get_room(room_tid)
+    if not room.on:
+        data = {
+            'fee': 0,
+        }
+        return JsonResponse(data)
+    else:
+        data = {
+            'fee': room.fee,
         }
         return JsonResponse(data)
 #====================

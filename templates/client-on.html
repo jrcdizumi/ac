@@ -8,7 +8,7 @@
 
 	<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js">
 	</script>
-	<script src="/static/js/my-client.js"></script>
+{#	<script src="/static/js/my-client.js"></script>#}
 	<script>
 //==================================================
 $(document).ready(function(){
@@ -47,10 +47,10 @@ $(document).ready(function(){
 
 	<script type="text/javascript">
     $(document).ready(function(){
-	//自动刷新页面,30秒
+	//自动刷新页面,2min
 	setTimeout(function(){
 	    location.reload();
-	}, 30000);
+	}, 120000);
 
 })
     </script>
@@ -121,6 +121,20 @@ $(document).ready(function(){
                 });
             });
         });
+        
+        $(document).ready(function(){
+            setInterval(function(){
+            $.ajax({
+                url: '/get_fee',  // 服务器端处理请求的URL
+                type: 'GET',  // 请求方法，可以是GET或POST
+                success: function(data) {  // 服务器成功响应请求后执行的函数，data是服务器返回的数据
+                    // 更新网页上的风速和费用信息
+                    {#$('#wind_speed').text('风速：' + data.fan_speed);#}
+                    $('#fee').text('费用：￥' + data.fee);  
+                }
+            });
+        }, 2000);  // 每隔2秒 发送一次请求
+});
     </script>
 </head>
 
