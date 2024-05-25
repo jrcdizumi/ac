@@ -40,9 +40,17 @@
                         <p>费用: ${room.on ? room.fee.toFixed(2) : ''}</p>
                         <p>费率: ${room.on ? room.fee_rate : ''}</p>
                     `;
+                    box.addEventListener('click', function() {
+                        monitor_manage_page(room.room_id);
+                    });
                     container.appendChild(box);
                 }
             });
+    }
+
+    function monitor_manage_page(roomId) {
+        const url = '/monitor_manage/?room_id=' + roomId;
+        window.open(url, '_blank');
     }
 
     setInterval(updateRooms, 1000);
