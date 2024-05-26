@@ -20,18 +20,19 @@ from hotel.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('monitor/', get_monitor_page),
+    path('monitor/', get_monitor_page, name='monitor'),
     path('refresh_monitor/', refresh_monitor, name='refresh_monitor'),
     path('monitor_manage/', monitor_manage, name='monitor_manage'),
     path('monitor_change/', monitor_change, name='monitor_change'),
     
-    path('front/', get_front_page),
+    path('front/', get_front_page, name='front'),
     path('check_in/', check_in),
     path('check_out/', check_out),
 
     # 默认
-    path('', client_off),
-    path('on/', client_on),
+    # path('client/<int:room_id>/', client_view, name='client'),
+    path('off/', client_off,name='off'),
+    path('on/', client_on,name='on'),
     # 客户端按钮
     path('power/', power),
     path('high/', change_high),
@@ -41,4 +42,7 @@ urlpatterns = [
     path('down/', change_down),
     path('get_fee/', get_fee),
     path('get_status/', get_status),
+
+    # 管理员和前台入口
+    path('', entry, name='entry'),
 ]

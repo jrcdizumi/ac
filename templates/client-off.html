@@ -56,7 +56,21 @@ $(document).ready(function(){
 
 
 	</script>
-
+	<script type="text/javascript">
+    $(document).ready(function() {
+        setInterval(function () {
+            $.ajax({
+                url: '/get_status',  // 服务器端处理请求的URL
+                type: 'GET',  // 请求方法，可以是GET或POST
+                success: function (data) {  // 服务器成功响应请求后执行的函数，data是服务器返回的数据
+                    if (data.status == true) {
+                         window.location.href = '/on';  // 如果状态为假，跳转到/页面
+                    }
+                }
+            });
+        }, 1000);
+    });// 每隔10秒 发送一次请求
+    </script>
     <script>
         $(document).ready(function(){
             $('#btn_high').click(function(e){

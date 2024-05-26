@@ -161,6 +161,7 @@ def get_room_id(request):
 
 
 def client_off(request):  # 第一次访问客户端界面、# 开机
+
     room_tid = get_room_id(request)
     room = Room.get_room(room_tid)
     Work = Request()  # 请求类
@@ -185,6 +186,12 @@ def power(request):  # 客户端-电源键
     room = Room.get_room(room_tid)
     # print("修改前: "+ str(room.on))
     Work = Request()  # 请求类
+    # if room.on:
+    #     Work.turn_off(room_tid)
+    #     return HttpResponseRedirect('/client/'+str(room_tid))
+    # else:
+    #     Work.turn_on(room_tid)
+    #     return HttpResponseRedirect('/client/'+str(room_tid))
     if room.on:
         Work.turn_off(room_tid)
         return HttpResponseRedirect('/')
@@ -274,10 +281,23 @@ def get_status(request):
     room_tid = get_room_id(request)
     room = Room.get_room(room_tid)
     data = {
+        'room_id': room.room_id,
         'status': room.on,
     }
     return JsonResponse(data)
 #====================
 
 
+# 入口函数
+def entry(request):
+    return render(request, 'entry.html')
+def client_view(request, room_id):
+    # room_tid = get_room_id(request)
+    room_tid = room_id
+    room = Room.get_room(room_tid)
+    Work = Request()  # 请求类
+    if room.on:
+        return render(request, 'client-on.html', RoomInfo(room).dic)
+    else :
+        return render(request, 'client-off.html', RoomInfo(room).dic)
 Room.calculate_fee()
