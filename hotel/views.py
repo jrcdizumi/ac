@@ -173,16 +173,20 @@ def get_room_id(request):
 
 
 def client_off(request):  # 第一次访问客户端界面、# 开机
-
     room_tid = get_room_id(request)
     room = Room.get_room(room_tid)
+    Work = Request()
+    if room.on:
+        Work.turn_off(room_tid)
     return render(request, 'client-off.html', RoomInfo(room).dic)
 
 
 def client_on(request):
     room_tid = get_room_id(request)
     room = Room.get_room(room_tid)
-    print(RoomInfo(room).dic)
+    Work = Request()
+    if not room.on:
+        Work.turn_on(room_tid)
     return render(request, 'client-on.html', RoomInfo(room).dic)
 
 
