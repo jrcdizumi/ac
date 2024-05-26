@@ -32,12 +32,24 @@ def refresh_monitor(request):  #监控界面获取数据
     return JsonResponse(data, safe=False)
 
 #监控打开管理界面
+from django.middleware.csrf import get_token
+
 def monitor_manage(request):
     if request.method == 'GET':
         room_id = request.GET.get('room_id')
         room = Room.get_room(room_id)
         room_dict = model_to_dict(room)
-        return render(request, 'room_manage.html', room_dict)
+
+        # This will get or set the CSRF token
+        csrftoken = get_token(request)
+
+        # Create your response
+        response = render(request, 'room_manage.html', room_dict)
+
+        # Set the CSRF token in the cookie
+        response.set_cookie('csrftoken', csrftoken)
+
+        return response
     else:
         return JsonResponse({'status': 'invalid request method'})
 
@@ -151,7 +163,7 @@ def get_room_id(request):
 
     if s_id not in room_Id.dic:
         room_Id.num += 1
-        if room_Id.num > 5:
+        if room_Id.num > 6:
             raise RoomNumberExceededError("Room number has exceeded the limit")
         else:
             room_Id.dic[s_id] = room_Id.num
@@ -164,18 +176,11 @@ def client_off(request):  # 第一次访问客户端界面、# 开机
 
     room_tid = get_room_id(request)
     room = Room.get_room(room_tid)
-    Work = Request()  # 请求类
-    if room.on:
-        Work.turn_off(room_tid)
     return render(request, 'client-off.html', RoomInfo(room).dic)
 
 
 def client_on(request):
     room_tid = get_room_id(request)
-    room = Room.get_room(room_tid)
-    Work = Request()  # 请求类
-    if not room.on:
-        Work.turn_on(room_tid)
     room = Room.get_room(room_tid)
     print(RoomInfo(room).dic)
     return render(request, 'client-on.html', RoomInfo(room).dic)
@@ -194,12 +199,12 @@ def power(request):  # 客户端-电源键
     #     return HttpResponseRedirect('/client/'+str(room_tid))
     if room.on:
         Work.turn_off(room_tid)
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect('/off')
     else:
         Work.turn_on(room_tid)
         if not room.is_occupied:
-            return HttpResponseRedirect('/')
-        return HttpResponseRedirect('/on/')
+            return HttpResponseRedirect('/off')
+        return HttpResponseRedirect('/on')
 
 
 def change_high(request):  # 提高速度

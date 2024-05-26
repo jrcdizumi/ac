@@ -161,21 +161,12 @@ h2 {
       <input type="text" id="token-input" placeholder="输入您的口令：">
     </div>
     <div class="oauth-buttons">
-      <button class="client">客户</button>
       <button class="front">前台</button>
       <button class="monitor">管理员</button>
     </div>
   </div>
 
   <script>
-  document.querySelector('.client').addEventListener('click', function() {
-  var token = document.getElementById('token-input').value;
-  if(token){
-    window.location.href = "{% url 'off'  %}"
-  }else {
-    {#alert("请输入有效的房间号（1~6）：");#}
-  }
-});
 
   document.querySelector('.front').addEventListener('click', function() {
     var token = document.getElementById('token-input').value;
